@@ -54,6 +54,8 @@ describe "Authentication" do
         describe "visitin the edit page" do
           before {visit edit_user_path(user) }
           it { should have_selector('title', text: 'Sign in') }
+          it { should_not have_link('Profile', href: user_path(user)) }
+          it { should_not have_link('Settings', href: edit_user_path(user)) }
         end
         
         describe "submitting to the update action" do
@@ -64,6 +66,8 @@ describe "Authentication" do
         describe "visiting the user index" do
           before { visit users_path }
           it { should have_selector('title', text: 'Sign in') }
+          it { should_not have_link('Profile', href: user_path(user)) }
+          it { should_not have_link('Settings', href: edit_user_path(user)) }
         end
       end
       
@@ -79,6 +83,31 @@ describe "Authentication" do
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
           end
+          
+          describe "when signing up again" do
+            before do
+              delete signout_path
+              sign_in user
+            end
+            
+            it "should render the default profile page" do
+              page.should have_selector('title', text: user.name)
+            end
+          end
+          
+        end
+      end
+      
+      describe "in the Microposts controller" do
+        
+        describe "submitting to the create action" do
+          before { post microposts_path }
+          specify { response.should redirect_to(signin_path) }
+        end
+        
+        describe "submitting to the destroy action" do
+          before { delete micropost_path(FactoryGirl.create(:micropost)) }
+          specify { response.should redirect_to(signin_path) }
         end
       end
     end
