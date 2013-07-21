@@ -18,7 +18,7 @@ describe "Micropost Pages" do
       describe "error messages" do
         before { click_button "Post" }
         it { should have_content('error') }
-      end
+      end  
     end
     
     describe "with valid information" do
@@ -36,9 +36,7 @@ describe "Micropost Pages" do
     describe "as correct user" do
       before { visit root_path }
       
-      it "should delete a micropost" do
-        expect { click_link "delete" }.to change(Micropost, :count).by(-1)
-      end
+     
     end
   end    
 end
