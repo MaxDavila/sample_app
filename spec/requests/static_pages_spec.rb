@@ -21,7 +21,6 @@ describe "Static pages" do
       let(:user) { FactoryGirl.create(:user) }
       before do
         FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
         sign_in user
         visit root_path
       end
@@ -31,6 +30,27 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+
+      it "should have the right micropost count" do
+        page.should have_selector("span", text: "1 micropost")
+      end
+
+      describe "should pluralize micropost" do
+        before do
+          click_link('Sign out')
+          30.times { FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet") }
+          sign_in user
+          visit root_path
+        end
+          it "should pluralize when there are several microposts" do
+            page.should have_selector("span", text: "#{user.feed.count} microposts") 
+          end
+
+          it "should paginate when there are more than 30 microposts" do
+            page.should have_css("div.pagination")
+          end
+      end
+
     end
   end
 

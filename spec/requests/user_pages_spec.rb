@@ -13,9 +13,10 @@ describe "UserPages" do
   
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
+    let(:other_user) { FactoryGirl.create(:user) }
     let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
     let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
-    
+    let!(:other_user_post) { FactoryGirl.create(:micropost, user: other_user, content: "Foobar") }
     before { visit user_path(user) }
     
     it { should have_selector('h1',   text: user.name) }
@@ -25,6 +26,28 @@ describe "UserPages" do
       it { should have_content(m1.content) }
       it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
+
+      describe "delete links" do     
+        it "should_not have delete when not signed in" do
+          page.should_not have_link("delete", href: micropost_path(m1.id)) 
+        end
+
+        describe "when signed" do
+          before do
+            sign_in user
+            visit user_path(user)
+          end
+
+          it "should have delete link to own post" do
+            page.should have_link("delete", href: micropost_path(m1.id))
+          end
+
+          it "should not have delete links to other users' microposts" do
+            page.should_not have_link("delete", href: micropost_path(other_user_post.id))
+          end
+        end
+
+      end
     end
   end
   
