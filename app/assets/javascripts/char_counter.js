@@ -8,4 +8,8 @@ function updatechar() {
 jQuery(document).ready(function ($) {
     updatechar();
     jQuery("#micropost_content").keydown(updatechar);
+    jQuery("#micropost_content").keyup(updatechar);
+    jQuery("#micropost_content").onchange(updatechar);
+
+
 });

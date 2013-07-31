@@ -204,6 +204,7 @@ describe User do
     before do
       @user.save
       @user.follow!(other_user)
+      other_user.follow!(@user)
     end
 
     it { should be_following(other_user) }
@@ -220,6 +221,17 @@ describe User do
       its(:followed_users) { should_not include(other_user) }
     end
 
+    it "should destroy all relationships" do
+      relationships = @user.relationships
+      @user.destroy
+      relationships.should be_empty
+    end
+
+    it "should destroy all reverse relationships" do
+      reverse_relationships = @user.reverse_relationships
+      @user.destroy
+      reverse_relationships.should be_empty
+    end
   end
 
 
